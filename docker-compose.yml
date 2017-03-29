@@ -1,0 +1,29 @@
+---
+version: "2"
+services:
+  db:
+    build: ./db
+    image: speedtest-meter:db
+    ports:
+      - 8083:8083
+      - 8086:8086
+    # volumes:
+    #   - ./data/db:/var/lib/influxdb
+  probe:
+    build: ./probe
+    image: speedtest-meter:probe
+    links:
+      - db
+    depends_on:
+      - db
+  web:
+    build: ./web
+    image: speedtest-meter:web
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - 80:3000
+    # volumes:
+    #   - ./data/web:/var/lib/grafana
