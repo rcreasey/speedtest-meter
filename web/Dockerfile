@@ -1,4 +1,4 @@
-FROM grafana/grafana:4.1.1
+FROM fg2it/grafana-armhf:v4.1.1
 
 ENV GF_SERVER_ROOT http://localhost
 ENV GF_AUTH_ANONYMOUS_ENABLED true

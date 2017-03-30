@@ -1,4 +1,5 @@
-FROM ubuntu:trusty
+FROM resin/rpi-raspbian:jessie
+MAINTAINER Ryan Creasey <ryan@infern.al>
 
 RUN apt-get update && apt-get install -y curl python python-pip
 RUN mkdir /app
@@ -13,3 +14,5 @@ COPY probe.sh /app/probe.sh
 
 RUN chmod +x /app/probe.sh
 CMD bash -c /app/probe.sh 
+
+ENV TEST_INTERVAL 300
