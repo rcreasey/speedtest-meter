@@ -12,21 +12,26 @@ out_hdlr.setLevel(logging.INFO)
 log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
-probe = speedtest.Speedtest()
-probe.get_best_server()
-
-if not probe.results.server:
-    log.error('Unable to select best server from Speedtest.net; Aborting')
-    sys.exit(1)
-else:
-    log.info("{0}: {1}".format(probe.results.server.get('sponsor'), probe.results.server.get('name')))
-
-probe.download()
-probe.upload()
-
-download_in_mbs = probe.results.download / 1000000
-upload_in_mbs = probe.results.upload / 1000000
 hostname = os.environ.get('HOSTNAME', socket.gethostname())
+download_in_mbs = 0
+upload_in_mbs = 0
+
+try:
+    probe = speedtest.Speedtest()
+    probe.get_best_server()
+
+    if not probe.results.server:
+        log.error('Unable to select best server from Speedtest.net; Aborting')
+    else:
+        log.info("{0}: {1}".format(probe.results.server.get('sponsor'), probe.results.server.get('name')))
+
+    probe.download()
+    probe.upload()
+
+    download_in_mbs = probe.results.download / 1000000
+    upload_in_mbs = probe.results.upload / 1000000
+except Exception as e:
+    log.error('Unable to gather results from Speedtest.net\n{0}', e.msg)
 
 log.info("Host: {host}, Download: {down:.2f} Mb/s, Upload: {up:.2f} Mb/s".format(host=hostname,
                                                                                  down=download_in_mbs,
@@ -43,3 +48,4 @@ db.write_points([{'measurement': 'download', 'fields': {'host': hostname, 'value
                  {'measurement': 'upload', 'fields': {'host': hostname, 'value': upload_in_mbs}}])
 
 log.info("-" * 25)
+
