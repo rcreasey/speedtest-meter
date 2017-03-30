@@ -1,4 +1,5 @@
 FROM ubuntu:trusty
+MAINTAINER Ryan Creasey <ryan@infern.al>
 
 RUN apt-get update && apt-get install -y curl python python-pip
 RUN mkdir /app
