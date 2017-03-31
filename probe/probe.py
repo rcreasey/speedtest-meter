@@ -1,7 +1,8 @@
 import influxdb
 import logging
-import os
 import optparse
+import os
+import requests
 import socket
 import sys
 
@@ -16,8 +17,8 @@ log.setLevel(logging.INFO)
 def speedtest(hostname):
     import speedtest
 
-    download = 0.0
-    upload = 0.0
+    down = 0.0
+    up = 0.0
 
     try:
 
@@ -32,8 +33,8 @@ def speedtest(hostname):
         probe.download()
         probe.upload()
 
-        download = probe.results.download / 1000000
-        upload = probe.results.upload / 1000000
+        down = probe.results.download / 1000000
+        up = probe.results.upload / 1000000
 
     except:
         log.error('Unable to gather results from Speedtest.net')
@@ -47,10 +48,10 @@ def speedtest(hostname):
 def fastdotcom(hostname):
     import fast_com
 
-    download = 0.0
+    down = 0.0
 
     try:
-        download = fast_com.fast_com(maxtime=10)
+        down = fast_com.fast_com(maxtime=10)
     except:
         log.error('Unable to gather results from Fast.com')
 
@@ -80,12 +81,11 @@ def main():
 
     try:
         db = influxdb.InfluxDBClient('db', 8086, 'admin', 'speedtest', 'speedtest')
-    except influxdb.exceptions.InfluxDBServerError as e:
+        db.create_database('speedtest')
+        db.write_points(data)
+    except (requests.exceptions.ConnectionError, influxdb.exceptions.InfluxDBServerError) as e:
         log.error('DB is offline; results not saved.')
         sys.exit(1)
-
-    db.create_database('speedtest')
-    db.write_points(data)
 
     log.info('-' * 25)
 
