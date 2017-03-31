@@ -15,4 +15,4 @@ COPY probe.sh /app/probe.sh
 RUN chmod +x /app/probe.sh
 CMD bash -c /app/probe.sh 
 
-ENV TEST_INTERVAL 5
+ENV TEST_INTERVAL 300
