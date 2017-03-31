@@ -6,11 +6,13 @@ RUN mkdir /app
 
 WORKDIR /app
 
-RUN curl -O https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
-RUN pip install influxdb
+RUN pip install influxdb speedtest-cli fastdotcom
 
+COPY fast_com.py /app/fast_com.py
 COPY probe.py /app/probe.py
 COPY probe.sh /app/probe.sh
 
 RUN chmod +x /app/probe.sh
 CMD bash -c /app/probe.sh 
+
+ENV TEST_INTERVAL 5
