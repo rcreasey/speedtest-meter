@@ -13,7 +13,7 @@ log.addHandler(out_hdlr)
 log.setLevel(logging.INFO)
 
 
-def speedtest():
+def speedtest(hostname):
     import speedtest
 
     download = 0.0
@@ -38,21 +38,25 @@ def speedtest():
     except:
         log.error('Unable to gather results from Speedtest.net')
 
-    return download, upload
+    log.info('Host: {host}, Download: {down:.2f} Mb/s, Upload: {up:.2f} Mb/s'.format(host=hostname, down=down, up=up))
+
+    return [{'measurement': 'download', 'fields': {'host': hostname, 'value': down}},
+            {'measurement': 'upload', 'fields': {'host': hostname, 'value': up}}]
 
 
-def fastdotcom():
+def fastdotcom(hostname):
     import fast_com
 
     download = 0.0
-    upload = 0.0
 
     try:
         download = fast_com.fast_com(maxtime=10)
     except:
         log.error('Unable to gather results from Fast.com')
 
-    return download, upload
+    log.info('Host: {host}, Download: {down:.2f} Mb/s'.format(host=hostname, down=down))
+
+    return [{'measurement': 'download', 'fields': {'host': hostname, 'value': down}}]
 
 
 def main():
@@ -70,11 +74,9 @@ def main():
     hostname = os.environ.get('HOSTNAME', socket.gethostname())
 
     if options.speedtest:
-        down, up = speedtest()
+        data = speedtest(hostname)
     elif options.fastdotcom:
-        down, up = fastdotcom()
-
-    log.info('Host: {host}, Download: {down:.2f} Mb/s, Upload: {up:.2f} Mb/s'.format(host=hostname, down=down, up=up))
+        data = fastdotcom(hostname)
 
     try:
         db = influxdb.InfluxDBClient('db', 8086, 'admin', 'speedtest', 'speedtest')
@@ -83,8 +85,7 @@ def main():
         sys.exit(1)
 
     db.create_database('speedtest')
-    db.write_points([{'measurement': 'download', 'fields': {'host': hostname, 'value': down}},
-                     {'measurement': 'upload', 'fields': {'host': hostname, 'value': up}}])
+    db.write_points(data)
 
     log.info('-' * 25)
 
