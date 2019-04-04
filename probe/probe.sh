@@ -2,6 +2,6 @@
 
 while true
 do
-    python probe.py -f
+    python probe.py -s
     sleep $TEST_INTERVAL
 done
