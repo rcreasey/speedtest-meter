@@ -1,14 +1,13 @@
 ---
-version: "2"
+version: "3"
 services:
   db:
     build: ./db
     image: speedtest-meter:db
     ports:
-      - 8083:8083
       - 8086:8086
     volumes:
-      - /Users/rcreasey/projects/speedtest-meter/data/db:/var/lib/influxdb
+      - ./data/db:/var/lib/influxdb
   probe:
     build: ./probe
     image: speedtest-meter:probe
@@ -19,6 +18,9 @@ services:
   web:
     build: ./web
     image: speedtest-meter:web
+    environment:
+      - GF_SERVER_ROOT_URL=http://localhost
+      - GF_AUTH_ANONYMOUS_ENABLED=true
     links:
       - db
     depends_on:
@@ -26,4 +28,4 @@ services:
     ports:
       - 80:3000
     volumes:
-      - /Users/rcreasey/projects/speedtest-meter/data/web:/var/lib/grafana
+      - ./data/web:/var/lib/grafana
