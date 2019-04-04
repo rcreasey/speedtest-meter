@@ -1,0 +1,3 @@
+[submodule "probe/fast.com"]
+	path = probe/fast.com
+	url = git@github.com:rcreasey/fast.com.git

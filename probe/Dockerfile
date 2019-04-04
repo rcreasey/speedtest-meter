@@ -1,11 +1,11 @@
-FROM python:2.7-alpine
+FROM python:alpine
 
 RUN pip install influxdb speedtest-cli
 
 ENV TEST_INTERVAL 300
 
 WORKDIR /app
-#COPY fast.com/fast_com.py .
+COPY fast.com/fast_com.py .
 COPY probe.py .
 COPY probe.sh .
 
