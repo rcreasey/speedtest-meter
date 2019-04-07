@@ -7,7 +7,7 @@ services:
     ports:
       - 8086:8086
     volumes:
-      - ./data/db:/var/lib/influxdb
+      - /home/pirate/projects/speedtest-meter/data/db:/var/lib/influxdb
   probe:
     build: ./probe
     image: speedtest-meter:probe
@@ -28,4 +28,4 @@ services:
     ports:
       - 80:3000
     volumes:
-      - ./data/web:/var/lib/grafana
+      - /home/pirate/projects/speedtest-meter/data/web:/var/lib/grafana
